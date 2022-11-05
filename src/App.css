@@ -1,7 +1,6 @@
 body {
     background: #202221;
     background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(54,53,53,1) 100%);
-    color: white !important;
 } 
 
 a {
@@ -12,7 +11,12 @@ a:hover {
 text-decoration: underline;
 }
 
+* {
+    color:white;
+}
+
 .button {
+    color: white;
     background-color: #303130;
     border: none;
     padding: 13px 29px;
