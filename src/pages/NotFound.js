@@ -14,7 +14,7 @@ function Main() {
             <title>404 Not Found - Alyocord</title>
             <img src={"//"+cdnUrl+'/cdn-1/favicon.ico'} height='150' width='150' alt="alyocord logo"/> <br/>
             <h2>We searched everywhere but we can't find what you're looking for.</h2>
-            <button class='button'><Link to="/">Home</Link></button> <br/> <br/>
+            <button className='button'><Link to="/">Home</Link></button> <br/> <br/>
             <img src={"//"+cdnUrl+"/cdn-1/404.png"} alt="404 art by TehBlake"/>
         </center>
     );
