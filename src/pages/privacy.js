@@ -11,7 +11,7 @@ function Privacy() {
         <div>
             <header>
                 <Link to={home}>
-                    <img src={`${cdnUrl}/favicon.ico`} alt="Elym Holdings LLC" />
+                    <img src={`${cdnUrl}/favicon.ico`} alt="Alyocord" />
                 </Link>
             </header>
             <main>
@@ -24,7 +24,7 @@ function Privacy() {
   <h1>Privacy Policy</h1>
   
   <p>
-    <a href={appUrl}>Elym Holdings LLC</a> is committed to protecting your privacy. This Privacy Policy describes how we collect, use, and share information about you when you visit or make a purchase from <a href={appUrl}>elymholdings.com</a> (the “Site”).
+    <a href={appUrl}>Elym Holdings LLC</a> is committed to protecting your privacy. This Privacy Policy describes how we collect, use, and share information about you when you visit or make a purchase from <a href={appUrl}>alyocord.com</a> (the “Site”).
   </p>
   
   <h2>What information do we collect?</h2>
