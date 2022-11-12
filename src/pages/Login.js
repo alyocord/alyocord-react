@@ -26,12 +26,6 @@ function Login() {
         navigate(route);
     }
 
-    const classes = {
-        textField: {
-            border: "1px solid white"
-        }
-    };
-
     return (
         <center>
             <br/> <img src={'//'+cdnUrl+'/cdn-1/favicon.ico'} height='75' width='75' alt="Alyocord logo"/> <br/>
@@ -52,8 +46,6 @@ function Login() {
                     label="Email"
                     variant="outlined"
                     onChange={event => setEmail(event.target.value)}
-                    InputProps={{ inputProps: { style: { color: '#fff' }}}}
-                    className={classes.textField}
                 /> <br/> <br/>
                 <TextField
                     type="password"

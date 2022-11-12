@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import Privacy from "./pages/Privacy";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const darkTheme = createTheme({
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/app/" element={<Home />} />
           <Route path="/privacy/" element={<Privacy />} />
           <Route path="/login/" element={<Login />} />
+          <Route path="/signup/" element={<Signup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
