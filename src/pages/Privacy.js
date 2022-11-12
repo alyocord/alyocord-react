@@ -2,15 +2,15 @@
 The content herein is strictly confidential and proprietary to Microsoft Corporation. No part of this content may be reproduced, stored, transmitted, disclosed or used in any form or by any means other than as expressly provided by the written Software License Agreement (SLA) between Microsoft Corporation and you (the licensee). 
 */
 
+import { appUrl, cdnUrl } from './Config';
+import { Link } from "react-router-dom";
+
 function Privacy() {
-    var cdnUrl = "../../../public/cdn-1";
-    var home = "./Home";
-    var appUrl = "localhost:3000";
     // Return the privacy page
     return (
         <div>
             <header>
-                <Link to={home}>
+                <Link to="/">
                     <img src={`${cdnUrl}/favicon.ico`} alt="Alyocord" />
                 </Link>
             </header>
@@ -24,7 +24,7 @@ function Privacy() {
   <h1>Privacy Policy</h1>
   
   <p>
-    <a href={appUrl}>Elym Holdings LLC</a> is committed to protecting your privacy. This Privacy Policy describes how we collect, use, and share information about you when you visit or make a purchase from <a href={appUrl}>alyocord.com</a> (the “Site”).
+    <a href={appUrl}>Alyocord</a> is committed to protecting your privacy. This Privacy Policy describes how we collect, use, and share information about you when you visit or make a purchase from <a href={appUrl}>alyocord.com</a> (the “Site”).
   </p>
   
   <h2>What information do we collect?</h2>
