@@ -1,102 +1,75 @@
-/* File Name: Login.js
-   Description: This file contains the code for the login page.
-   Copyright (c) 2022, Elym Holdings LLC, All rights reserved.
-   This source code is confidential and proprietary to Elym Holdings LLC.
-    No part of this source code may be reproduced, stored, transmitted,
-    disclosed or used in any form or by any means other than as
-    expressly provided by the written Software License Agreement (SLA) between Elym Holdings LLC and you (the licensee).
-*/
+import { useState } from "react";
+import { cdnUrl } from "../Config";
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 
-import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { home } from './Main';
-import '../styles/App.css';
-import { appUrl, cdnUrl } from '../Config';
-
-// create a function named Login that is a login system
 function Login() {
-    // create a variable named history that is a useHistory hook
-    const history = useHistory();
-    // create a variable named email that is a useState hook
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState('');
-    // create a variable named password that is a useState hook
     const [password, setPassword] = useState('');
-    // create a variable named error that is a useState hook
-    const [error, setError] = useState('');
-    // create a variable named loading that is a useState hook
-    const [loading, setLoading] = useState(false);
-    
-    // create a function named handleSubmit that is an async function
-    async function handleSubmit(e) {
-        // prevent the default action of the event
-        e.preventDefault();
-        // set the loading variable to true
-        setLoading(true);
-        // set the error variable to an empty string
-        setError('');
-        // create a variable named response that is a fetch request to the /login endpoint
-        const response = await fetch('/login', {
-        // set the method to POST
-        method: 'POST',
-        // set the headers to a JSON object
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        // set the body to a JSON object
-        body: JSON.stringify({
-            // set the email property to the email variable
-            email,
-            // set the password property to the password variable
-            password
-        })
-        });
-        // create a variable named data that is the response converted to JSON
-        const data = await response.json();
-        // if the response status is not 200
-        if (response.status !== 200) {
-        // set the error variable to the data message
-        setError(data.message);
-        // set the loading variable to false
-        setLoading(false);
-        } else {
-        // set the loading variable to false
-        setLoading(false);
-        // set the history location to the home variable
-        history.push(home);
-        }
+    const [status, setStatus] = useState('you logging in..');
+    const [statusCode, setStatusCode] = useState(false);
+
+    const statusStyles = {
+        color: statusCode === true ? 'green' : 'red'
+    };
+
+    function login() {
+        setStatusCode(true);
+        setStatus("you logged in!");
     }
-    
-    // return the following JSX
+
+    function nav(route) {
+        navigate(route);
+    }
+
+    const classes = {
+        textField: {
+            border: "1px solid white"
+        }
+    };
+
     return (
         <center>
-        <br/> <img src={"//"+cdnUrl+'/cdn-1/favicon.ico'} height='75' width='75' alt="alyocord logo"/> <br/>
-        <h1>Alyocord</h1>
-        <form onSubmit={handleSubmit}>
-            <input
-            type='email'
-            placeholder='email@example.com'
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            /> <br/>
-            <input
-            type='password'
-            placeholder='Password'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            /> <br/>
-            <button className='button' type='submit' disabled={loading}>
-            {loading ? 'Loading...' : 'Login'}
-            </button>
-        </form>
-        <br/>
-        <Link to='/register'>Register</Link>
-        <br/> 
-       
-        <br/>
-        <br/>
-        {error && <p>{error}</p>}
+            <br/> <img src={'//'+cdnUrl+'/cdn-1/favicon.ico'} height='75' width='75' alt="Alyocord logo"/> <br/>
+            <h1>Alyocord</h1>
+            <br/><br/>
+            <Button variant="contained" onClick={() => nav('/')}>Home</Button> <br/> <br/>
+            <Button variant="contained" onClick={() => nav(-1)}>Back</Button> <br/> <br/> <br/> <br/>
+            <div className='signup'>
+                <Box
+                    component="form"
+                    sx={{
+                        '& > :not(style)': { m: 1, width: '25ch' },
+                    }}
+                    noValidate
+                >
+                <TextField
+                    type="email"
+                    label="Email"
+                    variant="outlined"
+                    onChange={event => setEmail(event.target.value)}
+                    InputProps={{ inputProps: { style: { color: '#fff' }}}}
+                    className={classes.textField}
+                /> <br/> <br/>
+                <TextField
+                    type="password"
+                    label="Password"
+                    variant="outlined"
+                    onChange={event => setPassword(event.target.value)}
+                /> <br/> <br/>
+                <Button variant="contained" onClick={() => login()}>Login</Button>
+                </Box>
+            </div>
+            <br/>
+            <p style={statusStyles}>{status}</p> <br/>
+            <p>Email: {email}</p>
+            <p>Password: {password}</p>
         </center>
     );
 }
+
 export default Login;
-//  <Link to='/forgot'>Forgot Password</Link> - Put on L94 when forgetting password works

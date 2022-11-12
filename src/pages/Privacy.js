@@ -2,7 +2,7 @@
 The content herein is strictly confidential and proprietary to Microsoft Corporation. No part of this content may be reproduced, stored, transmitted, disclosed or used in any form or by any means other than as expressly provided by the written Software License Agreement (SLA) between Microsoft Corporation and you (the licensee). 
 */
 
-import { appUrl, cdnUrl } from './Config';
+import { appUrl, cdnUrl } from '../Config';
 import { Link } from "react-router-dom";
 
 function Privacy() {
@@ -133,5 +133,7 @@ function Privacy() {
       Occasionally, at our discretion, we may include or offer third-party products or services on our website. These third-party sites have separate and independent privacy policies. We therefore have no responsibility or liability for the content and activities of these linked sites. Nonetheless, we seek to protect the integrity of our site and welcome any feedback about these sites.
   </p>
     
-</div> </div> </div></main> </div> ); } 
+</div> </div> </div></main> </div> );
+} 
+
 export default Privacy;

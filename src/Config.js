@@ -1,2 +1,2 @@
-export const appUrl = "localhost:3000";
-export const cdnUrl = "localhost:3000";
+export const appUrl = "localhost:3000"; // the url is supposed to be cdn.alyocord.com so then we can use it in the scripts like cdnUrl+"/cdn-1" when we use it for the website
+export const cdnUrl = "localhost:3000"; // ? Can u explain this line please?
