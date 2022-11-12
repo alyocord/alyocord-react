@@ -14,8 +14,8 @@ function Home() {
       <br/> <img src={"//"+cdnUrl+"/cdn-1/favicon.ico"} height='75' width='75' alt='Alyocord logo'/> <br/>
       <h1>Alyocord</h1>
       <br/><br/><br/><br/>
-      <Button variant="contained" className='button' onClick={() => nav('/signup')}>Signup</Button> <br/> <br/>
-      <Button variant="contained" className='button' onClick={() => nav('/login')}>Login</Button>
+      <Button variant="contained" onClick={() => nav('/signup')}>Signup</Button> <br/> <br/>
+      <Button variant="contained" onClick={() => nav('/login')}>Login</Button>
     </center>
   );
 }
