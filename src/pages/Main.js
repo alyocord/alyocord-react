@@ -14,7 +14,7 @@ function Main() {
   return (
     <center>
       <br/> <img src={"//"+cdnUrl+'/cdn-1/favicon.ico'} height='75' width='75' alt="alyocord logo"/> <br/>
-      <h1>Alyocord</h1>                                    {/* Sign me up! */}
+      <h1>Alyocord</h1>
       <Button variant="contained" onClick={() => nav('/app')}>Sign me up!</Button> <br/>
       <br/><br/>
       <Container>
