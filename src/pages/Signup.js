@@ -107,7 +107,7 @@ function Signup() {
         nav(-1);
     }
 
-    function SignupForm() {
+    const signupform = () => {
         return (
             <div className='signup'>
                 <TextField
@@ -154,7 +154,7 @@ function Signup() {
             <br/><br/>
             <Button variant="contained" onClick={() => gotoApp()}>Home</Button> <br/> <br/>
             <Button variant="contained" onClick={() => gotoBack()}>Back</Button> <br/> <br/> <br/> <br/>
-            {user ? <Logout /> : <SignupForm />}
+            {user ? <Logout /> : signupform()}
         </center>
     );
 }

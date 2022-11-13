@@ -45,7 +45,7 @@ function Login() {
         );
     }
 
-    function LoginForm() {
+    const loginform = () => {
         return (
             <div className='login'>
                 <Box
@@ -151,7 +151,7 @@ function Login() {
             <br/><br/>
             <Button variant="contained" onClick={() => nav('/app')}>Home</Button> <br/> <br/>
             <Button variant="contained" onClick={() => nav(-1)}>Back</Button> <br/> <br/> <br/> <br/>
-            {user ? <Logout /> : <LoginForm />}
+            {user ? <Logout /> : loginform()}
             <br/>
             <p style={statusStyles}>{status}</p>
         </center>
