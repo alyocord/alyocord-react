@@ -17,16 +17,6 @@ a:hover {
 }
 
 .button {
-    color: white;
-    background-color: #303130;
-    border: none;
-    padding: 13px 29px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 18px;
-    box-shadow: 5px 10px #888888;
-    transition: background .2s ease-in;
     cursor: pointer;
 }
 

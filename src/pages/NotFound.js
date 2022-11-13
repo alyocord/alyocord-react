@@ -22,6 +22,7 @@ function Main() {
             <img src={"//"+cdnUrl+'/cdn-1/favicon.ico'} height='150' width='150' alt="alyocord logo"/> <br/>
             <h2>We searched everywhere but we can't find what you're looking for.</h2>
             <Button variant='contained' onClick={() => nav('/')}>Home</Button> <br/> <br/>
+            <Button variant='contained' onClick={() => nav(-1)}>Back</Button> <br/> <br/>
             <img src={"//"+cdnUrl+"/cdn-1/404.png"} alt="404 art by TehBlake"/>
         </center>
     );

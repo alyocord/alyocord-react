@@ -1,6 +1,8 @@
 import { getAuth } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { getFirestore } from "firebase/firestore";
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { getFirestore, collection, query, where, limit, getDoc, doc } from "firebase/firestore";
+import { cdnUrl } from '../../Config';
 import { useNavigate } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import $ from 'jquery';
@@ -28,9 +30,9 @@ function Chat() {
     }
 
     const style = `
-    body {
-        background: #36393F;
-        color: white;
+        body {
+            background: #36393F;
+            color: white;
         }
         
         a {
@@ -40,33 +42,7 @@ function Chat() {
         a:hover {
         text-decoration: underline;
         }
-        
-        .button {
-        background-color: #303130;
-        border: none;
-        color: white;
-        padding: 13px 29px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        box-shadow: 5px 10px #888888;
-        transition: background .2s ease-in;
-        cursor: pointer;
-        }
-        
-        .button:active {
-        background: #e5e5e5;
-        -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
-            -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
-                box-shadow: inset 0px 0px 5px #c1c1c1;
-            outline: none;
-        }
-        
-        .button:hover {
-        background-color: #1c1c1c;
-        }
-        
+
         input, select {
         padding: 12px 20px;
         margin: 8px 0;
@@ -195,8 +171,8 @@ function Chat() {
         .close {
         color: #aaa;
         float: right;
-        font-size: 28px;
-        font-weight: bold;
+        font-size: 28px !important;
+        font-weight: bold !important;
         }
         
         .close:hover,
@@ -211,7 +187,7 @@ function Chat() {
         }
         
         #AlyocordTurboFont {
-        font-family: Sans-Serif;
+        font-family: sans-serif !important;
         }
         
         .delm {
@@ -248,6 +224,10 @@ function Chat() {
         console.log("theme doesnt work yet");
     }
 
+    function chat() {
+        console.log("test");
+    }
+
     return (
         <>
             <style>{style}</style>
@@ -257,20 +237,72 @@ function Chat() {
 
             </div>
             <div id='channel-name'>
-            <h4 className='gc-text'><b>Global Chat</b> <l style={{color: "#636060"}}>(messages: 0)</l></h4></div>
-            <div id='messages'><br/></div>
+            <h4 className='gc-text'><b>Global Chat</b> <span style={{color: "#636060"}}>(messages: next update)</span></h4></div>
+            <ChatRoom room="global" />
+            <input type='text' name='message' className='message-content' placeholder = 'Message #global' id='message' autoComplete="off" />
+            <button onClick={() => chat()} className='button send-message' id='chat' style={{display: "none"}}>Send</button>
 
-            <input type='text' name='message' className='message-content' placeholder = 'Message #global' onkeyup="filter()" id='message' autocomplete="off" />
-            <button onclick="chat()" className='button send-message' id='chat' style={{display: "none"}}>Send</button>
+            <button className="button" style={{background: "none", border: "none"}} onClick={() => logout()}><img src='//cdn0.iconfinder.com/data/icons/thin-line-color-2/21/05_1-512.png' alt="logout icon" height='25' width='25' id='logout'/></button>
 
-            <button style={{background: "none", border: "none"}} onClick={() => logout()}><img src='//cdn0.iconfinder.com/data/icons/thin-line-color-2/21/05_1-512.png' alt="logout icon" height='25' width='25' id='logout'/></button>
+            <button className="button" style={{background: "transparent", border: "none"}} onClick={() => theme()} id='theme-trigger'><img alt="change theme" src='//cdn1.iconfinder.com/data/icons/user-interface-16x16-vol-1/16/contrast-circle-512.png' height='20' width='20' style={{display: "none"}}/></button>
 
-            <button style={{background: "transparent", border: "none"}} onClick={() => theme()} id='theme-trigger'><img alt="change theme" src='//cdn1.iconfinder.com/data/icons/user-interface-16x16-vol-1/16/contrast-circle-512.png' height='20' width='20' style={{display: "none"}}/></button>
+            <button className="button" style={{background: "transparent", border: "none"}} onClick={() => nav('/chat/settings')}><img alt="settings icon" src='//media.discordapp.net/attachments/1027560810962235392/1029375797825380362/unknown.png' height='25' width='25' id='settings'/></button>
 
-            <button style={{background: "transparent", border: "none"}} onClick={() => nav('/chat/settings')}><img alt="settings icon" src='//media.discordapp.net/attachments/1027560810962235392/1029375797825380362/unknown.png' height='25' width='25' id='settings'/></button>
-
-            <button style={{background: "transparent", border: "none"}} onClick={() => nav('/chat/turbo')}><img alt="turbo icon" src='//media.discordapp.net/attachments/1028244276590686218/1030940228514480228/turbo.png' height='25' width='25' id='turbo-man'/></button>
+            <button className="button" style={{background: "transparent", border: "none"}} onClick={() => nav('/chat/turbo')}><img alt="turbo icon" src='//media.discordapp.net/attachments/1028244276590686218/1030940228514480228/turbo.png' height='25' width='25' id='turbo-man'/></button>
         </>
+    );
+}
+
+var lastId = "0";
+
+function ChatRoom(props) {
+    const { room } = props;
+
+    const messagesRef = collection(db, "messages");
+    const q = query(messagesRef, limit(50), where("channel", "==", room));
+
+    const [messages] = useCollection(q, {idField: "id"});
+
+    return (
+        <div id="messages">
+            <br/>
+            {messages && messages.docs.map(msg => <ChatMessage key={msg.id} message={msg.data()} />)}
+        </div>
+    );
+}
+
+function ChatMessage(props) {
+    const { content, sender, id } = props.message;
+
+    var msguser = "Deleted User";
+    var avatar = "default.png";
+    var nameid = "0000";
+    var turbo = false;
+    
+    getDoc(doc(db, "users", sender)).then(docSnap => {
+        if (docSnap.exists()) {
+            var data = docSnap.data();
+
+            msguser = data.username;
+            avatar = data.pfp;
+            nameid = data.nameid;
+            turbo = false;
+        }
+    });
+
+    return (
+        <div id={"message-content-" + id } className='msg'>
+            <img
+                className='pfp'
+                src={'//'+cdnUrl+'/cdn-2/pfp/'+avatar}
+                height='50'
+                width='50'
+                alt="user avatar"
+            /> &nbsp; <span>&nbsp; {msguser} &nbsp;  &nbsp;
+            <span style={{color: "#747678"}}>#{nameid}</span> {turbo ? <img alt="turbo logo" src='//media.discordapp.net/attachments/1028244276590686218/1030940228514480228/turbo.png' height='20' width='20' /> : ''} <br/>
+            <p style={{display: "inline"}}><span className='msg'>{content}</span></p>
+            </span>
+        </div>
     );
 }
 

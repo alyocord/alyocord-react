@@ -1,2 +1,2 @@
-export const appUrl = "alyocord.web.app";
-export const cdnUrl = "alyocord.web.app";
+export const appUrl = "localhost:3000";
+export const cdnUrl = "localhost:3000";
