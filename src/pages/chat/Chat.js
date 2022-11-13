@@ -274,35 +274,55 @@ function ChatRoom(props) {
 function ChatMessage(props) {
     const { content, sender, id } = props.message;
 
-    var msguser = "Deleted User";
-    var avatar = "default.png";
-    var nameid = "0000";
-    var turbo = false;
+    var msguser;
+    var avatar;
+    var nameid;
+    var turbo;  
     
+    function setVar(a, v) {
+        if (a === "msu") {
+            msguser = v;
+        }
+    }
+
     getDoc(doc(db, "users", sender)).then(docSnap => {
         if (docSnap.exists()) {
             var data = docSnap.data();
 
-            msguser = data.username;
+            setVar("msu", data.username);
             avatar = data.pfp;
             nameid = data.nameid;
+            turbo = false;
+        } else {
+            msguser = "Deleted User";
+            avatar = "default.png";
+            nameid = "0000";
             turbo = false;
         }
     });
 
     return (
-        <div id={"message-content-" + id } className='msg'>
-            <img
-                className='pfp'
-                src={'//'+cdnUrl+'/cdn-2/pfp/'+avatar}
-                height='50'
-                width='50'
-                alt="user avatar"
-            /> &nbsp; <span>&nbsp; {msguser} &nbsp;  &nbsp;
-            <span style={{color: "#747678"}}>#{nameid}</span> {turbo ? <img alt="turbo logo" src='//media.discordapp.net/attachments/1028244276590686218/1030940228514480228/turbo.png' height='20' width='20' /> : ''} <br/>
-            <p style={{display: "inline"}}><span className='msg'>{content}</span></p>
-            </span>
-        </div>
+        <>
+            <div id={"message-content-" + id } className='msg' style={{position: "relative"}}>
+                <img
+                    className='pfp'
+                    src={'//'+cdnUrl+'/cdn-2/pfp/'+avatar}
+                    height='50'
+                    width='50'
+                    alt="user avatar"
+                /> &nbsp; <span>&nbsp; <span style={{position: "absolute"}}>{msguser}</span>
+                &nbsp;  &nbsp;
+                <span style={{color: "#747678"}}>#{nameid}</span>
+                {turbo ? <img
+                    alt="turbo logo"
+                    src='//media.discordapp.net/attachments/1028244276590686218/1030940228514480228/turbo.png'
+                    height='20'
+                    width='20'
+                /> : ''} <br/>
+                <p style={{display: "inline"}}><span className='msg'>{content}</span></p>
+                </span>
+            </div> <br/>
+        </>
     );
 }
 
