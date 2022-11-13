@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { cdnUrl } from "../Config";
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import { useNavigate, Link } from 'react-router-dom';
 import { initializeApp } from "firebase/app";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, getDoc, setDoc, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBG950hkNvpC-RXmG9CvPb4FnXZL2E4sHA",
@@ -35,13 +35,9 @@ function Login() {
 
     function Logout() {
         function logout() {
-            signOut(auth).then(() => {
-                setStatusCode(true);
-                setStatus("Succesfully logged out!");
-            }).catch((error) => {
-                setStatusCode(false);
-                setStatus("ERROR "+error.code+": "+error.message);
-            });
+            auth.signOut();
+            setStatusCode(true);
+            setStatus("Succesfully logged out!");
         }
 
         return (
@@ -49,14 +45,68 @@ function Login() {
         );
     }
 
-    function NotSigned() {
+    function LoginForm() {
         return (
-            <p>We are waiting for you to login :-{")"}</p>
+            <div className='login'>
+                <Box
+                    component="form"
+                    noValidate
+                >
+                <TextField
+                    type="email"
+                    label="Email"
+                    variant="outlined"
+                    onChange={event => setEmail(event.target.value)}
+                /> <br/> <br/>
+                <TextField
+                    type="password"
+                    label="Password"
+                    variant="outlined"
+                    onChange={event => setPassword(event.target.value)}
+                /> <br/> <br/>
+                <Button variant="contained" onClick={() => login()}>Login</Button> <br/> <br/>
+                <Button variant="contained" onClick={() => loginGoogle()}>Sign in with Google</Button> <br/> <br/>
+                <Link to='/signup' style={{color: "cyan"}}>Don't have an account</Link>
+                </Box>
+            </div>
         );
     }
 
     const statusStyles = {
         color: statusCode === true ? 'green' : 'red'
+    };
+
+    const loginGoogle = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+        .then((result) => {
+            //const credential = GoogleAuthProvider.credentialFromResult(result);
+            //const token = credential.accessToken;
+            const user = result.user;
+            getDoc(doc(db, "users", user.uid)).then(docSnap => {
+                if (docSnap.exists()) {
+                    setStatusCode(true);
+                    setStatus("Successfully logged in as "+docSnap.data().username+"!");
+                } else {
+                    setDoc(doc(db, "users", user.uid), {
+                        username: user.displayName,
+                        email: user.email,
+                        turbolast: 0,
+                        timesturbo: 0,
+                        pfp: "default.png",
+                        nameid: 1,
+                        id: user.uid
+                    });
+                    setStatusCode(true);
+                    setStatus("Successfully logged in as "+user.displayName+"!");
+                }
+            });
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            setStatusCode(false);
+            setStatus("ERROR "+errorCode+": "+errorMessage);
+        });
     };
 
     function login() {
@@ -66,16 +116,15 @@ function Login() {
             const uid = user.uid;
             setStatusCode(true);
 
-            const docRef = doc(db, "users", uid);
-            const docSnap = getDoc(docRef);
-
-            if (docSnap.exists()) {
-                setStatusCode(true);
-                setStatus("Document data:", docSnap.data());
-            } else {
-                setStatusCode(false);
-                setStatus("Error: Not your fault!");
-            }
+            getDoc(doc(db, "users", uid)).then(docSnap => {
+                if (docSnap.exists()) {
+                    setStatusCode(true);
+                    setStatus("Successfully logged in as "+docSnap.data().username+"!");
+                } else {
+                    setStatusCode(false);
+                    setStatus("There was an error: Document not found");
+                }
+            });
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -100,36 +149,14 @@ function Login() {
             <br/> <img src={'//'+cdnUrl+'/cdn-1/favicon.ico'} height='75' width='75' alt="Alyocord logo"/> <br/>
             <h1>Alyocord</h1>
             <br/><br/>
-            <Button variant="contained" onClick={() => nav('/')}>Home</Button> <br/> <br/>
+            <Button variant="contained" onClick={() => nav('/app')}>Home</Button> <br/> <br/>
             <Button variant="contained" onClick={() => nav(-1)}>Back</Button> <br/> <br/> <br/> <br/>
-            <div className='signup'>
-                <Box
-                    component="form"
-                    sx={{
-                        '& > :not(style)': { m: 1, width: '25ch' },
-                    }}
-                    noValidate
-                >
-                <TextField
-                    type="email"
-                    label="Email"
-                    variant="outlined"
-                    onChange={event => setEmail(event.target.value)}
-                /> <br/> <br/>
-                <TextField
-                    type="password"
-                    label="Password"
-                    variant="outlined"
-                    onChange={event => setPassword(event.target.value)}
-                /> <br/> <br/>
-                <Button variant="contained" onClick={() => login()}>{auth ? "Logout" : "Login"}</Button>
-                </Box>
-            </div>
+            {user ? <Logout /> : <LoginForm />}
             <br/>
-            <p style={statusStyles}>{status}</p> <br/> <br/> <br/>
-            {user ? <Logout /> : <NotSigned />}
+            <p style={statusStyles}>{status}</p>
         </center>
     );
+
 }
 
 export default Login;

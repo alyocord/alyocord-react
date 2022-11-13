@@ -2,10 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { initializeApp } from "firebase/app";
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { cdnUrl } from '../Config';
 import Button from '@mui/material/Button';
-import { doc, setDoc, getFirestore } from "firebase/firestore";
+import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBG950hkNvpC-RXmG9CvPb4FnXZL2E4sHA",
@@ -34,6 +35,41 @@ function Signup() {
     }
 
     const auth = getAuth(app);
+    const [user] = useAuthState(auth);
+
+    const signupGoogle = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+        .then((result) => {
+            //const credential = GoogleAuthProvider.credentialFromResult(result);
+            //const token = credential.accessToken;
+            const user = result.user;
+            getDoc(doc(db, "users", user.uid)).then(docSnap => {
+                if (docSnap.exists()) {
+                    setStatColor(true);
+                    setStatus("Successfully signed up as "+docSnap.data().username+"!");
+                } else {
+                    setDoc(doc(db, "users", user.uid), {
+                        username: user.displayName,
+                        email: user.email,
+                        turbolast: 0,
+                        timesturbo: 0,
+                        pfp: "default.png",
+                        nameid: 1,
+                        id: user.uid
+                    });
+                    setStatColor(true);
+                    setStatus("Successfully signed up as "+user.displayName+"!");
+                }
+            });
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            setStatColor(false);
+            setStatus("ERROR "+errorCode+": "+errorMessage);
+        });
+    };
+
     function signUp() {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
@@ -42,6 +78,10 @@ function Signup() {
                 setDoc(doc(db, "users", user.uid), {
                     username: username,
                     email: email,
+                    turbolast: 0,
+                    timesturbo: 0,
+                    pfp: "default.png",
+                    nameid: 1,
                     id: user.uid
                 });
                 setStatColor(true);
@@ -67,6 +107,46 @@ function Signup() {
         nav(-1);
     }
 
+    function SignupForm() {
+        return (
+            <div className='signup'>
+                <TextField
+                    variant="outlined"
+                    label='Username'
+                    type='text'
+                    onChange={e => setUsername(e.target.value)}
+                /> <br/> <br/>
+                <TextField
+                    variant="outlined"
+                    label='Email'
+                    type='email'
+                    onChange={e => setEmail(e.target.value)}
+                /> <br/> <br/>
+                <TextField
+                    variant="outlined"
+                    label='Password'
+                    type='password'
+                    onChange={e => setPassword(e.target.value)}
+                /> <br/> <br/>
+                <Button variant="contained" onClick={() => signUp()}>Signup</Button> <br/> <br/>
+                <Button variant="contained" onClick={() => signupGoogle()}>Signup with Google</Button>
+                <p style={statyles}>{status}</p>
+            </div>
+        );
+    }
+
+    function Logout() {
+        function logout() {
+            auth.signOut();
+            setStatColor(true);
+            setStatus("Succesfully logged out!");
+        }
+
+        return (
+            <Button variant='contained' onClick={() => logout()}>Logout</Button>
+        );
+    }
+
     return (
         <center>
             <br/> <img src={'//'+cdnUrl+'/cdn-1/favicon.ico'} height='75' width='75' alt="Alyocord logo" /> <br/>
@@ -74,13 +154,7 @@ function Signup() {
             <br/><br/>
             <Button variant="contained" onClick={() => gotoApp()}>Home</Button> <br/> <br/>
             <Button variant="contained" onClick={() => gotoBack()}>Back</Button> <br/> <br/> <br/> <br/>
-            <div className='signup'>
-                <TextField variant="outlined" label='Username' type='text' onChange={e => setUsername(e.target.value)} /> <br/> <br/>
-                <TextField variant="outlined" label='Email' type='email' onChange={e => setEmail(e.target.value)} /> <br/> <br/>
-                <TextField variant="outlined" label='Password' type='password' onChange={e => setPassword(e.target.value)} /> <br/> <br/>
-                <Button variant="contained" onClick={() => signUp()}>Signup</Button>
-                <p style={statyles}>{status}</p>
-            </div>
+            {user ? <Logout /> : <SignupForm />}
         </center>
     );
 }
