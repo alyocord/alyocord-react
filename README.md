@@ -1,4 +1,6 @@
-# Alyocord React
-The live and ReactJS version of Alyocord
-<br>
-Well i mean the first Alyocord was live but this is more live!
+# Alyocord, but reactjs
+
+This source code is by no means complete, but it is source code nonetheless.
+
+
+Public Domain 😄
